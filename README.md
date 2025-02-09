@@ -1,7 +1,9 @@
 # 🚀 Amazon Route 53 Failover Routing Project
 
 ---
-
+<p align="center">
+  <img width="568" alt="failover-arch" src="https://github.com/user-attachments/assets/cdca40fd-d1e7-4b6e-8f2a-c68fe5c8f1cf" />
+</p>
 ## 🍽️ Let's Consider a Café Example  
 
 Imagine a café website hosted on **two EC2 instances** (`CafeInstance1` and `CafeInstance2`) in different **Availability Zones (AZs)**. Customers access the website to view the menu and place orders.  
