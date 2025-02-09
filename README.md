@@ -12,6 +12,7 @@ Imagine a café website hosted on **two EC2 instances** (`CafeInstance1` and `Ca
 - **AWS SNS** sends an email alert when failover occurs, ensuring quick response to outages.  
 
 This setup helps maintain seamless customer experience and reliability for the café's online presence. ☕🌐
+
 ---
 
 ## 📖 Overview
