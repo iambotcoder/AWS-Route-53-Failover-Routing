@@ -1,88 +1,148 @@
-# 🌐 Amazon Route 53 Failover Routing
+# 🚀 Amazon Route 53 Failover Routing Project
 
-## 🎯 Objective
-This project focuses on setting up Amazon Route 53 Failover Routing for a web application. The failover routing is configured for two Amazon EC2 instances hosting a website in different Availability Zones (AZs). If the primary instance fails, Route 53 will automatically route traffic to the secondary instance.
+---
 
-## 🏗️ Final Architecture Overview
-- 🖥️ Two EC2 instances (PrimaryInstance and SecondaryInstance) deployed in separate AZs.
-- ✅ Route 53 health check monitors the primary instance.
-- 🔄 If the primary instance fails, Route 53 automatically switches traffic to the secondary instance.
-- 📩 AWS Simple Notification Service (SNS) sends an alert email when failover occurs.
+## 📖 Overview
+This project demonstrates how to set up **Amazon Route 53 Failover Routing** for a web application. The configuration ensures high availability by automatically redirecting traffic to a secondary EC2 instance when the primary instance becomes unavailable.
 
-## 📝 Implementation Steps
+---
 
-### 🏁 Step 1: Verify Website Availability
-1. 🔹 Open the AWS Management Console.
-2. 🔹 Navigate to EC2 and confirm that two instances (PrimaryInstance in AZ1 and SecondaryInstance in AZ2) are running.
-3. 🔹 Copy the `PrimaryWebSiteURL` and `SecondaryWebsiteURL`.
-4. 🔹 Open both URLs in a browser to verify the application is running on both instances.
-5. 🔹 Test the functionality by interacting with the website.
+## 📑 Table of Contents
+- 🔑 Prerequisites
+- 🗺️ Architecture
+- 📝 Task 1: Confirm the Café Websites
+- 📝 Task 2: Configure Route 53 Health Check
+- 📝 Task 3: Configure Route 53 Failover Records
+  - Task 3.1: Create an A Record for the Primary Website
+  - Task 3.2: Create an A Record for the Secondary Website
+- 📝 Task 4: Verify DNS Resolution
+- 📝 Task 5: Test Failover
+- 🗑️ Cleaning Up Resources
+- ✅ Conclusion
+- 📚 Reference
 
-### 🔍 Step 2: Configure Route 53 Health Check
-1. 🌍 Open Route 53 in the AWS Management Console.
-2. ⚙️ Go to **Health Checks** → **Create Health Check**.
-3. 🔧 Configure the following:
-   - **Name**: `Primary-Website-Health`
-   - **Monitor**: Endpoint
-   - **Specify Endpoint By**: IP Address
-   - **IP Address**: Enter `PrimaryInstance` public IP.
-   - **Path**: `/health`
-   - **Request Interval**: Fast (10 seconds)
-   - **Failure Threshold**: 2
-4. 📢 Enable SNS Notification:
-   - **Create Alarm**: Yes
-   - **Topic Name**: `Primary-Website-Health`
-   - **Recipient Email**: Your email address.
-5. ✅ Click **Create Health Check**.
-6. 📧 Check your email and confirm the SNS subscription.
+---
 
-### ⚡ Step 3: Configure Route 53 Failover Records
+## 🔑 Prerequisites
+Before you start, ensure you have the following:
+- **AWS Management Console** access.
+- **Two EC2 Instances** (`CafeInstance1` and `CafeInstance2`) running in separate **Availability Zones (AZs)**.
+- **Route 53 Hosted Zone** configured with a domain.
+- **AWS Simple Notification Service (SNS)** set up for email notifications.
 
-#### 🏗️ Step 3.1: Create an A Record for the Primary Website
-1. 🌍 Go to **Route 53** → **Hosted Zones**.
-2. 🏷️ Choose your domain (`your-domain.com`).
-3. ➕ Click **Create Record** and enter:
-   - **Record Name**: `www`
-   - **Type**: `A`
-   - **Value**: Enter `PrimaryInstance` IP.
-   - **TTL**: 15
-   - **Routing Policy**: Failover
-   - **Failover Record Type**: Primary
-   - **Health Check ID**: `Primary-Website-Health`
-   - **Record ID**: `FailoverPrimary`
-4. ✅ Click **Create Record**.
+---
 
-#### 🏗️ Step 3.2: Create an A Record for the Secondary Website
-1. ➕ Click **Create Record** again.
-2. 🔧 Enter:
-   - **Record Name**: `www`
-   - **Type**: `A`
-   - **Value**: Enter `SecondaryInstance` IP.
-   - **TTL**: 15
-   - **Routing Policy**: Failover
-   - **Failover Record Type**: Secondary
-   - **Health Check ID**: Leave empty
-   - **Record ID**: `FailoverSecondary`
-3. ✅ Click **Create Record**.
+## 🗺️ Architecture
+### 🔄 Workflow:
+1. Two EC2 instances (`CafeInstance1` and `CafeInstance2`) host a café website in different AZs.
+2. **Route 53 Health Check** monitors the primary instance (`CafeInstance1`).
+3. If `CafeInstance1` fails, **Route 53 automatically switches traffic** to `CafeInstance2`.
+4. **AWS SNS** sends an email alert when failover occurs.
 
-### 🔎 Step 4: Verify DNS Resolution
-1. 🔗 Copy the Record Name (`www.your-domain.com`).
-2. 🌍 Open a browser and go to:
-   ```bash
-   http://www.your-domain.com/health
+---
+
+## 📝 Task 1: Confirm the Café Websites
+1. Open the **AWS Management Console**.
+2. Navigate to **EC2** → **Instances**.
+3. Verify that `CafeInstance1` (AZ1) and `CafeInstance2` (AZ2) are **running**.
+4. Copy the **PrimaryWebSiteURL** and **SecondaryWebsiteURL**.
+5. Open both URLs in a browser and verify the café application is running.
+6. Place an order to test functionality.
+
+---
+
+## 📝 Task 2: Configure Route 53 Health Check
+1. Open **Route 53** in the AWS Management Console.
+2. Go to **Health Checks** → **Create Health Check**.
+3. Configure the following:
+   - **Name:** `Primary-Website-Health`
+   - **Monitor:** `Endpoint`
+   - **Specify Endpoint By:** `IP Address`
+   - **IP Address:** `CafeInstance1` public IP.
+   - **Path:** `/cafe`
+   - **Request Interval:** `Fast (10 seconds)`
+   - **Failure Threshold:** `2`
+   - **Enable SNS Notification:** ✅ Yes
+   - **Topic Name:** `Primary-Website-Health`
+   - **Recipient Email:** `Your Email Address`
+4. Click **Create Health Check**.
+5. Check your email and confirm the SNS subscription.
+
+---
+
+## 📝 Task 3: Configure Route 53 Failover Records
+### 📝 Task 3.1: Create an A Record for the Primary Website
+1. Navigate to **Route 53** → **Hosted Zones**.
+2. Select your domain (`XXXXXX_XXXXXXXXXX.vocareum.training`).
+3. Click **Create Record** and enter:
+   - **Record Name:** `www`
+   - **Type:** `A`
+   - **Value:** `CafeInstance1 IP`
+   - **TTL:** `15`
+   - **Routing Policy:** `Failover`
+   - **Failover Record Type:** `Primary`
+   - **Health Check ID:** `Primary-Website-Health`
+   - **Record ID:** `FailoverPrimary`
+4. Click **Create Record**.
+
+### 📝 Task 3.2: Create an A Record for the Secondary Website
+1. Click **Create Record** again.
+2. Enter the following details:
+   - **Record Name:** `www`
+   - **Type:** `A`
+   - **Value:** `CafeInstance2 IP`
+   - **TTL:** `15`
+   - **Routing Policy:** `Failover`
+   - **Failover Record Type:** `Secondary`
+   - **Health Check ID:** Leave empty
+   - **Record ID:** `FailoverSecondary`
+3. Click **Create Record**.
+
+---
+
+## 📝 Task 4: Verify DNS Resolution
+1. Copy the **Record Name** (`www.XXXXXX_XXXXXXXXXX.vocareum.training`).
+2. Open a browser and visit:
    ```
-3. 🏆 The Primary Website should load.
+   http://www.XXXXXX_XXXXXXXXXX.vocareum.training/cafe
+   ```
+3. The **Primary Website** should load successfully.
 
-### 🔄 Step 5: Test Failover
-1. 🛑 Go to **EC2** → **Instances**.
-2. 🔽 Select `PrimaryInstance`.
-3. ⚠️ Click **Instance State** → **Stop Instance**.
-4. 🔍 Go to **Route 53** → **Health Checks**.
-5. ⏳ Wait for `Primary-Website-Health` to change status to **Unhealthy**.
-6. 🔄 Refresh the browser tab with your website. The secondary instance (`SecondaryInstance`) should now serve the webpage.
-7. 🚀 Restart `PrimaryInstance` and verify failback.
+---
 
-## 🎉 Conclusion
-You have successfully implemented failover routing using Amazon Route 53. 
-- 🔀 Route 53 automatically redirected traffic to the secondary instance when the primary instance became unavailable.
-- 📩 AWS SNS sent an email alert when the primary instance failed.
+## 📝 Task 5: Test Failover
+1. Navigate to **EC2 → Instances**.
+2. Select `CafeInstance1`.
+3. Click **Instance State** → **Stop Instance**.
+4. Go to **Route 53** → **Health Checks**.
+5. Wait for `Primary-Website-Health` to change status to `Unhealthy`.
+6. Refresh your website – it should now be served by `CafeInstance2`.
+7. Restart `CafeInstance1` and verify **failback**.
+
+---
+
+## 🗑️ Cleaning Up Resources
+To avoid unnecessary costs, delete the following resources:
+1. **Route 53 Health Check**
+   - Open **Route 53** → **Health Checks**.
+   - Select `Primary-Website-Health` and click **Delete**.
+2. **Route 53 Failover Records**
+   - Open **Route 53** → **Hosted Zones**.
+   - Delete the failover records (`FailoverPrimary` and `FailoverSecondary`).
+3. **SNS Subscription**
+   - Open **Amazon SNS**.
+   - Delete the **Primary-Website-Health** topic.
+4. **EC2 Instances** (if no longer needed)
+   - Open **EC2 Dashboard**.
+   - Select `CafeInstance1` and `CafeInstance2`.
+   - Click **Terminate Instances**.
+
+---
+
+## ✅ Conclusion
+In this project, we successfully configured **Amazon Route 53 Failover Routing** to ensure high availability for a web application. The setup automatically redirected traffic to a secondary instance when the primary instance failed. Additionally, AWS SNS sent an email alert upon failover detection.
+
+---
+
+## 📚 Reference
+This project was inspired by AWS Restart Canvas Lab: **176-[JAWS]-Activity - Route 53 Failover Routing**.
